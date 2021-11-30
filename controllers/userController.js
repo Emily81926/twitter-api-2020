@@ -6,7 +6,13 @@ const userController = {
     userService.signUp(req, res, data => {
       return res.json(data)
     })
-  }
+  },
+
+  signIn: (req, res) => {
+    userService.signIn(req, res, data => {
+      return res.status(401).json(data)
+    })
+  },
 }
 
 // userService exports
