@@ -1,5 +1,5 @@
 // 載入所需套件
-const { Like, Tweet } = require('../models')
+const { Like } = require('../models')
 const { Op } = require('sequelize')
 const helpers = require('../_helpers')
 
