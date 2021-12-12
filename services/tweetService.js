@@ -1,5 +1,5 @@
 // 載入所需套件
-const { Tweet, User } = require('../models')
+const { Tweet, User, Notification } = require('../models')
 const helpers = require('../_helpers')
 const sequelize = require('sequelize')
 const ReqError = require('../helpers/ReqError')
@@ -11,10 +11,24 @@ const tweetService = {
     if (!description) {
       throw new ReqError('內容不可空白')
     } else {
-      await Tweet.create({
+      const tweet = await Tweet.create({
         description,
         UserId: helpers.getUser(req).id
       })
+      const subscribers = await User.findAll({
+        where: { id: helpers.getUser(req).id },
+        raw: true,
+        nest: true,
+        include: [{ model: User, as: 'Subscribers', attributes: ['id'] }],
+        attributes: [] 
+      })
+      
+      Promise.all(
+        Array.from(
+          { length: subscribers.length },
+          (_, i) => Notification.create({ TweetId: tweet.id, subscriberId: subscribers[i].Subscribers.id })
+        )
+      )
       return callback({ status: 'success', message: '成功發文' })
     }
   },

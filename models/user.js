@@ -1,4 +1,7 @@
 'use strict';
+
+const subscribe = require("./subscribe");
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     email: DataTypes.STRING,
@@ -23,6 +26,16 @@ module.exports = (sequelize, DataTypes) => {
       through: models.Followship,
       foreignKey: 'followerId',
       as: 'Followings'
+    })
+    User.belongsToMany(User, {
+      through: models.Subscribe,
+      foreignKey: 'subscriberId',
+      as: 'Subscribeds'
+    })
+    User.belongsToMany(User, {
+      through: models.Subscribe,
+      foreignKey: 'subscribedId',
+      as: 'Subscribers'
     })
   };
   return User;
