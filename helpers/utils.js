@@ -1,4 +1,4 @@
-const { Message } = require('../models')
+const { Message, Notification } = require('../models')
 const { Op } = require('sequelize')
 
 module.exports = {
@@ -29,7 +29,7 @@ module.exports = {
         },
         { isRead: 0 },
         { [Op.not]: [{ UserId }] }]
-      },
+      }
     })
     return notRead
   },
@@ -39,6 +39,32 @@ module.exports = {
       where: {
         [Op.and]: [{ roomName }, { isRead: 0 }, { [Op.not]: [{ UserId }] }]
       }
+    })
+  },
+
+  getNotifications: async (UserId) => {
+    const notification = await Notification.findAll({
+      raw: true,
+      nest: true,
+      where: { subscriberId: UserId },
+      include: [{ model: Tweet, attributes: ['text'], include: [{ model: User, attributes: ['avatar', 'name'] }] }],
+      order: [['createdAt', 'DESC']]
+    })
+    return notification
+  },
+
+  getNotifyNotRead: async (UserId) => {
+    const notifyNotRead = await Notification.count({
+      where: {
+        [Op.and]: [{ subscriberId: UserId }, { isRead: 0 }]
+      }
+    })
+    return notifyNotRead
+  },
+
+  changeToReadNote: async (UserId) => {
+    await Notification.update({ isRead: 1 }, {
+      where: { subscriberId: UserId }
     })
   }
 }

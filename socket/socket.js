@@ -1,6 +1,6 @@
 // 載入所需套件
 const { socketAuth } = require('../middlewares/auth')
-const { createRoomName, postMessage, getNotRead, changeToRead } = require('../helpers/utils')
+const { createRoomName, postMessage, getNotRead, changeToRead, getNotifications, changeToReadNote, getNotifyNotRead } = require('../helpers/utils')
 
 module.exports = (Server, httpServer) => {
   const io = new Server(httpServer, {
@@ -31,6 +31,23 @@ module.exports = (Server, httpServer) => {
       const notRead = await getNotRead(currentUser.id)
       console.log('init', notRead)
       socket.emit('messageNotRead', notRead)
+    })
+
+    //未讀通知訊息
+    socket.on('notifyNotReadInit', async () => {
+      const notRead = await getNotifyNotRead(currentUser.id)
+      console.log('init', notRead)
+      socket.emit('notifyNotRead', notRead)
+    })
+
+    //傳送通知
+    socket.on('notifyInit', async () => {
+      await changeToReadNote(currentUser.id)
+      const notification = await getNotifications(currentUser.id)
+      socket.emit('notify', notification)
+      const notRead = await getNotifyNotRead(currentUser.id)
+      console.log('read', notRead)
+      socket.emit('notifyNotRead', notRead)
     })
 
     // 加入特定頻道(public or private)
