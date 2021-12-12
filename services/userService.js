@@ -171,6 +171,7 @@ const userService = {
         attributes: ['id', 'account', 'name', 'avatar', 'cover', 'introduction',
           [sequelize.literal(`(select count(followerId) from Followships where followerId = User.id)`), 'followings'], [sequelize.literal(`(select count(followingId) from Followships where followingId = User.id)`), 'followers'],
           [sequelize.literal(`exists(select 1 from Followships where followerId = ${currentUserId} and followingId = User.id)`), 'isFollowed'],
+          [sequelize.literal(`exists(select 1 from Subscribes where subscribedId = ${currentUserId} and subscriberId = User.id)`), 'isSubscribed'],
           [sequelize.literal(`(select count(UserId) from Tweets where UserId = User.id)`), 'tweetsCounts']
         ]
       })
