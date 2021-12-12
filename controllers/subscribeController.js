@@ -10,6 +10,12 @@ const subscribeController = {
     } catch (err) {
       return res.status(400).json({ status: err.name, message: err.message })
     }
+  },
+
+  deleteSubscribe: async (req, res) => {
+    subscribeService.deleteSubscribe(req, res, data => {
+      return res.json(data)
+    })
   }
 }
 

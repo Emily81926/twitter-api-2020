@@ -26,6 +26,17 @@ const subscribeService = {
       })
       return callback({ status: 'success', message: '成功訂閱' })
     }
+  },
+
+  deleteSubscribe: async (req, res, callback) => {
+    //取消對他人的訂閱
+    await Subscribe.destroy({
+      where: {
+        subscribedId: helpers.getUser(req).id,
+        subscriberId: req.params.id
+      }
+    })
+    return callback({ status: 'success', message: '已取消追蹤' })
   }
 }
 
